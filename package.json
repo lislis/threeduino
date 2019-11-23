@@ -1,0 +1,14 @@
+{
+  "name": "threedurino",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "startserver": "node ./server/server.js",
+    "startclient": "node ./server/client.js"
+  },
+  "dependencies": {
+    "serialport": "^8.0.5",
+    "ws": "^7.2.0"
+  }
+}
