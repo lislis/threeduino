@@ -1,4 +1,24 @@
-// these need to be accessed inside more than one function so we'll declare them first
+// WEBSOCKET
+const socket = new WebSocket('ws://localhost:8088');
+let data = {};
+
+socket.addEventListener('open', function (event) {
+  socket.send('Hello Server!');
+});
+
+socket.addEventListener('message', function (event) {
+  let d = JSON.parse(event.data);
+  data = {x: parseInt(d.x), y: parseInt(d.y), z: parseInt(d.z)};
+  console.log(data);
+});
+
+
+function deg2rad(int) {
+  return int * Math.PI / 180;
+}
+
+
+// THREE JS
 let container;
 let camera;
 let renderer;
@@ -6,7 +26,6 @@ let scene;
 let mesh;
 
 function init() {
-
   // Get a reference to the container element that will hold our scene
   container = document.querySelector( '#scene-container' );
 
@@ -71,9 +90,9 @@ function animate() {
   // function calls itself
   renderer.render( scene, camera );
 
-  mesh.rotation.z += 0.01;
-  mesh.rotation.x += 0.01;
-  mesh.rotation.y += 0.01;
+  mesh.rotation.z = deg2rad(data.z);
+  mesh.rotation.x = deg2rad(data.x);
+  mesh.rotation.y = deg2rad(data.y);
 }
 
 // call the init function to set everything up

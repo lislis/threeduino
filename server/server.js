@@ -1,23 +1,34 @@
-const SerialPort = require('serialport');
-const Readline = require('@serialport/parser-readline');
+const SerialPort = require('serialport')
+const Readline = require('@serialport/parser-readline')
+const WebSocket = require('ws')
 
-/*
-const port = new SerialPort('/dev/ttyACM0', { baudRate: 9600 });
-const parser = port.pipe(new Readline({ delimiter: '\n' }));// Read the port data
+const port = new SerialPort('/dev/ttyACM0', { baudRate: 9600 }) // change port if necessary
+const parser = port.pipe(new Readline({ delimiter: '\n' })) // look in arduino code for separator
+const wss = new WebSocket.Server({ port: 8088 })
+
+
+let sensordata = {}
 
 port.on("open", () => {
-  console.log('serial port open');
+  console.log('serial port open')
 });
 
 parser.on('data', data =>{
-  console.log('got word from arduino:', data);
+  console.log('got word from arduino:', data)
+  let split = data.split(',')
+
+  if (split.length === 3) { // this is true when sensor init is done
+    let obj = {x: split[0], y: split[1], z: split[2]}
+    sensordata = JSON.stringify(obj)
+
+    wss.clients.forEach(client => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(sensordata)
+      }
+    });
+  }
 });
 
-*/
-
-const WebSocket = require('ws')
-
-const wss = new WebSocket.Server({ port: 8088 })
 
 wss.on('connection', ws => {
   ws.on('message', message => {
